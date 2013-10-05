@@ -1,0 +1,12 @@
+<package>
+	<description brief="Nodelet GUI manager">
+		Nodelet manager with Qt4 support
+	</description>
+	<author>max.schwarz@uni-bonn.de</author>
+	<license>BSD</license>
+
+	<depend package="nodelet"/>
+	<export>
+	    <cpp cflags="-I${prefix}" lflags="-L${prefix}/lib" />
+	</export>
+</package>

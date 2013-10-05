@@ -1,0 +1,11 @@
+<launch>
+	<include file="$(find launch)/hardware/robot.launch" />
+	<include file="$(find launch)/cv/cv.launch" />
+
+	<node name="game_controller" pkg="rcup_game_controller" type="game_controller" output="screen">
+	</node>
+
+	<node name="soccer_behaviour" pkg="soccer_behaviour" type="soccer_behaviour" output="screen">
+		<remap from="/ball/filteredPosition" to="/ball/ego_rot_ball_vector" />
+	</node>
+</launch>

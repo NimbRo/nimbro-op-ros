@@ -1,0 +1,22 @@
+<launch>
+	<param name="robot_description" command="cat $(find nimbro_op_model)/robots/$(optenv NIMBRO_ROBOT_VARIANT nimbro_op).xml" />
+
+	<param name="use_gui" value="true" />
+
+	<param name="/field_type" value="bonn" />
+
+	<include file ="$(find launch)/config/server.launch" />
+
+	<node name="joy" pkg="joy" type="joy_node" />
+
+	<node name="robotcontrol" pkg="robotcontrol" type="robotcontrol" output="screen" required="true">
+<rosparam>
+hw_interface: "robotcontrol::DummyInterface"
+motion_modules:
+ - "headcontrol::HeadControl"
+ - "fall_protection::FallProtection"
+ - "Gait"
+ - "motionplayer::MotionPlayer"
+</rosparam>
+	</node>
+</launch>

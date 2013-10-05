@@ -1,0 +1,3 @@
+<launch>
+	<node pkg="walk_and_kick" name="walk_and_kick" type="walk_and_kick" output="screen"/>
+</launch>

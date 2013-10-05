@@ -1,0 +1,5 @@
+header:
+  name: motionName
+  preState: startState
+  playState: stateWhilePlaying
+  postState: endState

@@ -1,0 +1,95 @@
+<robot name="single_leg">
+	<material name="link">
+		<color rgba="0.1 0.1 0.1 1.0" />
+	</material>
+
+	<link name="right_hip_link">
+	</link>
+
+	<link name="right_tigh_link">
+		<inertial>
+			<origin
+				xyz="0.0051531 -0.016936 -0.17064"
+				rpy="0 0 0" />
+			<mass
+				value="0.25435" />
+			<inertia
+				ixx="0.0011777"
+				ixy="-1.1584E-05"
+				ixz="-8.8813E-05"
+				iyy="0.0011484"
+				iyz="0.00017611"
+				izz="0.00013048" />
+		</inertial>
+		<visual>
+			<origin
+				xyz="0 0 0"
+				rpy="0 0 0" />
+			<geometry>
+				<mesh
+				filename="package://nimbro_op_model/mesh/2link/tigh.STL" />
+			</geometry>
+			<material name="link" />
+		</visual>
+		<collision>
+			<origin
+				xyz="0 0 0"
+				rpy="0 0 0" />
+			<geometry>
+				<mesh
+				filename="package://nimbro_op_model/mesh/2link/tigh.STL" />
+			</geometry>
+		</collision>
+	</link>
+
+	<link name="right_shank_link">
+		<inertial>
+			<origin
+				xyz="0.016396 0.020901 -0.18739"
+				rpy="0 0 0" />
+			<mass
+				value="0.4407" />
+			<inertia
+				ixx="0.001306"
+				ixy="3.0122E-05"
+				ixz="-0.0001373"
+				iyy="0.0014601"
+				iyz="-0.00018383"
+				izz="0.00036492" />
+		</inertial>
+		<visual>
+			<origin
+				xyz="0 0 0"
+				rpy="0 0 0" />
+			<geometry>
+				<mesh
+				filename="package://nimbro_op_model/mesh/2link/shank.STL" />
+			</geometry>
+			<material name="link" />
+		</visual>
+		<collision>
+			<origin
+				xyz="0 0 0"
+				rpy="0 0 0" />
+			<geometry>
+				<mesh
+				filename="package://nimbro_op_model/mesh/2link/shank.STL" />
+			</geometry>
+		</collision>
+	</link>
+
+	<joint name="right_hip_pitch" type="continuous">
+		<parent link="right_hip_link" />
+		<child link="right_tigh_link" />
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<axis xyz="0 1 0" />
+	</joint>
+
+	<joint name="right_knee_pitch" type="continuous">
+		<parent link="right_tigh_link" />
+		<child link="right_shank_link" />
+		<origin xyz="0 0 -0.22" rpy="0 0 3.1415927" />
+		<axis xyz="0 -1 0" />
+		<limit lower="-0.24697" upper="2.3439" effort="1" velocity="10" />
+	</joint>
+</robot>

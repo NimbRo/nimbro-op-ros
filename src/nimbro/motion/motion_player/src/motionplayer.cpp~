@@ -1,0 +1,154 @@
+//Motion Module to play motions from Trajectories
+//Author: Sebastian Schüller <schuell1@cs.uni-bonn.de>
+
+#include <pluginlib/class_list_macros.h>
+#include <ros/console.h>
+#include <ros/node_handle.h>
+#include <ros/package.h>
+
+#include "motionplayer.h"
+
+
+namespace fs = boost::filesystem;
+using namespace motionplayer;
+
+
+MotionPlayer::MotionPlayer()
+ : isPlaying(false)
+{
+	ros::NodeHandle nh("~");
+
+	m_srv_play = nh.advertiseService("/motion_player/play", &MotionPlayer::handlePlay, this);
+// 	m_sub_joy = nh.subscribe("/joy", &MotionPlayer::handleJoy, this);
+}
+
+MotionPlayer::~MotionPlayer()
+{
+
+}
+
+bool MotionPlayer::init(robotcontrol::RobotModel* model)
+{
+	if (! robotcontrol::MotionModule::init(model))
+		return false;
+
+
+	fs::path p((ros::package::getPath("launch") + "/motions"));
+	if (! loadMotionFiles(p))
+		return false;
+
+	mapJoints();
+
+	m_model = model;
+
+
+
+	m_state_init    = model->registerState("init");
+	m_state_kicking = model->registerState("kicking");
+	m_state_prone   = model->registerState("prone");
+	m_state_relaxed = model->registerState("relaxed");
+	m_state_sitting = model->registerState("sitting");
+	m_state_sittingDown = model->registerState("sitting down");
+	m_state_standing    = model->registerState("standing");
+	m_state_standUp     = model->registerState("standing up");
+	m_state_supine      = model->registerState("supine");
+
+
+	return true;
+}
+
+void MotionPlayer::mapJoints()
+{
+	std::map<std::string, MappedMotion>::iterator motion;
+	for (motion = m_motionNames.begin(); motion != m_motionNames.end(); ++motion)
+	{
+		std::vector<std::string> jointList = motion->second.jointList;
+		for (unsigned i = 0; i < jointList.size(); i++)
+		{
+			motion->second.motionToModel[i] = findIndex(jointList[i]);
+		}
+	}
+}
+
+int MotionPlayer::findIndex(std::string name)
+{
+	for (size_t i = 0; i < model()->numJoints(); i++)
+	{
+		const boost::shared_ptr<robotcontrol::Joint>& joint = (*m_model)[i];
+
+		if (joint->name == name)
+			return i;
+	}
+	return 0;
+}
+
+
+bool MotionPlayer::isTriggered()
+{
+    return robotcontrol::MotionModule::isTriggered();
+}
+
+void MotionPlayer::handleJoy()
+{
+
+}
+
+bool MotionPlayer::handlePlay(motion_player::PlayMotionRequest& req, motion_player::PlayMotionResponse& res)
+{
+	if (isPlaying)
+	{
+		ROS_ERROR("Another Motion is still playing");
+		return false;
+	}
+	return true;
+}
+
+void MotionPlayer::play(std::string motion)
+{
+	startPlaying();
+}
+
+
+bool MotionPlayer::loadMotionFiles(const fs::path& dir)
+{
+	if (!fs::exists(dir) || !fs::is_directory(dir))
+		return false;
+
+	fs::directory_iterator end;
+	fs::directory_iterator file(dir);
+
+	std::string fName;
+	boost::regex suffixEx("\\.yaml$");
+	std::string suffix = suffixEx.str();
+
+	MappedMotion newMotion;
+
+	for (; file != end; ++file)
+	{
+		if (fs::is_directory(*file))
+			continue;
+
+		fName = file->path().leaf().string();
+
+		if (!boost::regex_search(fName, suffixEx))
+			continue;
+
+		if (!newMotion.load(file->path().string()))
+			return false;
+
+		fName = fName.substr(0, fName.size() - suffix.size());
+		std::pair<std::string, MappedMotion> entry(fName, newMotion);
+		m_motionNames.insert(entry);
+	}
+
+	return true;
+}
+
+
+void MotionPlayer::step()
+{
+
+}
+
+
+PLUGINLIB_EXPORT_CLASS(motionplayer::MotionPlayer, robotcontrol::MotionModule)

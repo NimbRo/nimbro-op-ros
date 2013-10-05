@@ -1,0 +1,13 @@
+<package>
+	<description brief="IDS uEye camera driver">
+		IDS uEye camera driver.
+	</description>
+	<author>max.schwarz@uni-bonn.de</author>
+	<license>BSD</license>
+
+	<depend package="nodelet"/>
+	<depend package="sensor_msgs" />
+	<export>
+		<nodelet plugin="${prefix}/nodelet_plugins.xml" />
+	</export>
+</package>

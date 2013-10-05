@@ -1,0 +1,355 @@
+dyngait:
+  comCtrl:
+    P: 0
+  const_com_x: -0.015
+  cp:
+    dT: 0.15
+    goal_x: 0.1
+    goal_y: -0.1
+    slope_x: 0.05
+    slope_y: 0
+    stepTime: 0.8
+  doubleSupportTime: 0
+  effort: 0.75
+  footYaw: 0
+  free_x_ki: 2
+  free_y: -0.037
+  free_z:
+    height: 0.03
+    u_high: 0.394
+    u_low: 0.305
+    vf: -0.1
+    vi: 0.1
+  iktest:
+    pitch: 0
+    roll: 0
+    x: -0.01
+    y: -0.1
+    yaw: 0
+    z: -0.56
+  phaseStep: 0.267
+  running: 0
+  trunkCtrl:
+    D: 0.08
+    I: 0
+    P: 1
+    bias: 0.22
+    pitch:
+      ankle: 0.3
+      hip: 1
+      knee: 0
+    roll:
+      ankle: 0
+      hip: 0
+  trunk_pitch_bias: 0.22
+  use_const_com: 0
+  xOffset: 0.01
+  zOffset: 0.411
+  z_fudge: 0
+  zmp:
+    pre_gain: 0.85
+    zmp_D: 0
+    zmp_I: 10
+    zmp_P: 0
+    zmp_goal: 0
+  zmpTest:
+    x: 0
+    y: 0.01
+field:
+  magneticHeading: 0.53
+gait:
+  ankle_effort: 0.4
+  balance_gain: -0.099
+  captureStep:
+    Cy: 0
+    D: 0
+    Z: 0
+    alpha: 0
+    delta: 0
+    dy: 0
+    energy: 0
+    intensity: 0
+    minEnergyDev: 0
+    mu: 0
+    omega: 0
+    sigma: 0
+    stepDelay: 0
+    stepSizeFactorY: 0
+  damping:
+    LateralSlope: 0
+    Maximum: 0
+    Minimum: 0
+    SagittalSlope: 0
+    SlopeArmX: 0
+    SlopeArmY: 0
+  dynamicGait:
+    GCVNormP: 2.4
+    accelerationBackward: 0.25
+    accelerationForward: 0.18
+    accelerationRotational: 0.6
+    accelerationSideward: 0.3
+    armSwing: 0
+    armSwingSlope: 0.25
+    balanceOffset: 0
+    decelerationFactor: 2
+    firstStepDuration: 0.5
+    firstStepHipSwing: 0.01
+    footOffsetXAccSlope: 0
+    gaitFrequency: 2.4
+    gaitFrequencySlopeX: 0
+    gaitFrequencySlopeY: 0
+    lateralHipSwing: 0.011
+    lateralHipSwingSlope: 0
+    pushHeight: 0
+    pushHeightSlope: 0
+    rotationalHipSwingSlope: 0
+    stableSagAngleFront: 0
+    stableSagAngleSlope: 10
+    stepHeight: 0.025
+    stepHeightSlope: 0.02
+    stepLengthXPushout: 0
+    stepLengthXSlopeBwd: 0.14
+    stepLengthXSlopeFwd: 0.048
+    stepLengthYPushout: 0.07
+    stepLengthYSlope: 0.07
+    stepLengthZPushout: 0.01
+    stepLengthZSlope: 0.1
+    stepLengthZVPushout: 0.05
+    stoppingVelocity: 0.1
+    supportSlope: 0.85
+    swingStartTiming: 0
+    swingStopTiming: 2.38
+    tiltRotLean: 0.07
+    tiltSpeedBwd: 0.06
+    tiltSpeedFwd: 0.01
+  effort: 0.4
+  fallProtectionRelaxAngle: 0
+  fusedAngleCorrectionX: 0
+  fusedAngleCorrectionY: 0
+  gcv_offset:
+    x: -0.23
+    y: 0
+    z: 0
+  haltPosition:
+    armOffsetX: 0
+    armOffsetY: 0.19
+    armOffsetZ: 0.05
+    complianceAnkle: 0
+    complianceArm: 0
+    complianceLeg: 0
+    complianceTrunk: 0
+    footAngleX: 0
+    footAngleY: 0
+    footOffsetX: -0.04
+    footOffsetY: -0.02
+    footOffsetZ: 0.01
+    footShiftY: 0
+  joystick_enabled: 1
+  odometry:
+    scale:
+      x: 0.09
+      y: 0.11
+      z: 0.9
+    use_simulation_odometry: 0
+    x_offset: -0.7
+  simulation:
+    simulationFrequency: 0
+    solverIterations: 0
+  supportEffort: 0.35
+  systemIterationTime: 0.008
+gc:
+  enemyIsRight: 1
+  positiveIsYellow: 1
+  robotNumber: 4
+  teamNumber: 27
+headcontrol:
+  head_enabled: 1
+  max_head_vel: 4
+  search_vel: 1.5708
+  settling_time: 0.5
+motion_modules:
+  keyframe_player_hack: 0
+particle_filter:
+  observation:
+    alpha_uniform_base: 0.2
+    std_angle: 0.2
+    std_compass: 1.109
+    std_distance: 0.5
+pf:
+  observation:
+    alpha_uniform_base: 0.2
+    std_angle: 0.2
+    std_compass: 0.785398
+    std_distance: 0.5
+robotcontrol:
+  accLimit: 24.95
+  compass:
+    hard:
+      x: 0.489658
+      y: -0.0889381
+      z: 0.0984495
+  cycle_ms: 8
+  effortSlope: 0.02
+  joints:
+    head_pitch:
+      id: 20
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    left_ankle_pitch:
+      id: 16
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    left_ankle_roll:
+      id: 18
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    left_elbow_pitch:
+      id: 6
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    left_hip_pitch:
+      id: 12
+      invert: 0
+      readFeedback: 1
+      type: MX-106
+    left_hip_roll:
+      id: 10
+      invert: 0
+      readFeedback: 1
+      type: MX-106
+    left_hip_yaw:
+      id: 8
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    left_knee_pitch:
+      id: 14
+      invert: 0
+      readFeedback: 1
+      type: MX-106
+    left_shoulder_pitch:
+      id: 2
+      invert: 0
+      readFeedback: 1
+      type: MX-106
+    left_shoulder_roll:
+      id: 4
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    neck_yaw:
+      id: 19
+      invert: 0
+      readFeedback: 1
+      type: MX-106
+    right_ankle_pitch:
+      id: 15
+      invert: 0
+      readFeedback: 1
+      type: MX-106
+    right_ankle_roll:
+      id: 17
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    right_elbow_pitch:
+      id: 5
+      invert: 0
+      readFeedback: 1
+      type: MX-106
+    right_hip_pitch:
+      id: 11
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    right_hip_roll:
+      id: 9
+      invert: 0
+      readFeedback: 1
+      type: MX-106
+    right_hip_yaw:
+      id: 7
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    right_knee_pitch:
+      id: 13
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    right_shoulder_pitch:
+      id: 101
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+    right_shoulder_roll:
+      id: 3
+      invert: 1
+      readFeedback: 1
+      type: MX-106
+  models:
+    MX-106:
+      km: 0.17
+      stribeckOne: -0.0023
+      stribeckTwo: 0.0250731405677264
+      viscuous: 0.553952330165401
+  offsets:
+    head_pitch: 2048
+    left_ankle_pitch: 2051
+    left_ankle_roll: 2304
+    left_elbow_pitch: 1526
+    left_hip_pitch: 2041
+    left_hip_roll: 1785
+    left_hip_yaw: 2054
+    left_knee_pitch: 1200
+    left_shoulder_pitch: 2035
+    left_shoulder_roll: 2540
+    neck_yaw: 2048
+    right_ankle_pitch: 1759
+    right_ankle_roll: 1785
+    right_elbow_pitch: 2550
+    right_hip_pitch: 2030
+    right_hip_roll: 2300
+    right_hip_yaw: 2054
+    right_knee_pitch: 2907
+    right_shoulder_pitch: 2049
+    right_shoulder_roll: 1576
+  pause: 0
+  publishCommand: 0
+  rawSlope: 0.02
+  trunkCtrl:
+    pitch:
+      D: 0
+      P: 0
+      ankle: 0.3
+      hip: 1
+      knee: 0
+    roll:
+      D: 0
+      P: 0
+      ankle: 0
+      hip: 0
+  useFeedbackPos: 0
+  useModel: 1
+  useSupportInfo: 1
+  velLimit: 24.95
+summer_school:
+  on_run:
+    place_robot: 1
+    random_ball: 0
+    random_goal: 0
+    random_obstacle: 0
+    random_robot: 0
+  run: 0
+  use_imperfect_measurements: 0
+  use_obstacle: 0
+vision:
+  landmark_filter_dist:
+    x: 0.08
+    y: 0.13
+walk_and_kick:
+  enable_wak: 1

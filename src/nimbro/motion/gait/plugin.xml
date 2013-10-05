@@ -1,0 +1,7 @@
+<library path="lib/libgait">
+  <class type="Gait" base_class_type="robotcontrol::MotionModule">
+  <description>
+    Motion layer from old NimbRo software
+  </description>
+  </class>
+</library>

@@ -1,0 +1,15 @@
+<package>
+	<description brief="Camera image display">
+		Camera image display.
+	</description>
+	<author>max.schwarz@uni-bonn.de</author>
+	<license>BSD</license>
+
+	<depend package="nodelet"/>
+	<depend package="sensor_msgs" />
+	<depend package="nodelet_gui_manager" />
+	<export>
+		<nodelet plugin="${prefix}/nodelet_plugins.xml" />
+		<cpp cflags="-I${prefix}" lflags="-L${prefix}/lib" />
+	</export>
+</package>

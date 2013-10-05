@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <name>plot_msgs</name>
+  <version>0.0.0</version>
+  <description>Plot messages</description>
+  <maintainer email="max.schwarz@uni-bonn.de">Max Schwarz</maintainer>
+
+  <license>TODO</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>genmsg</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <run_depend>roscpp</run_depend>
+
+  <export>
+  </export>
+</package>

@@ -1,0 +1,14 @@
+<package>
+	<description brief="V4L2 camera driver">
+		V4L2 camera driver.
+	</description>
+	<author>max.schwarz@uni-bonn.de</author>
+	<license>BSD</license>
+
+	<depend package="nodelet"/>
+	<depend package="sensor_msgs" />
+	<depend package="calibration" />
+	<export>
+		<nodelet plugin="${prefix}/nodelet_plugins.xml" />
+	</export>
+</package>

@@ -1,0 +1,8 @@
+<library path="lib/librobotinterface">
+	<class type="robotcontrol::RobotInterface" base_class_type="robotcontrol::HardwareInterface">
+		<description></description>
+	</class>
+	<class type="robotcontrol::DummyInterface" base_class_type="robotcontrol::HardwareInterface">
+		<description></description>
+	</class>
+</library>
