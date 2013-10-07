@@ -1,4 +1,4 @@
-NimbRo-OP ROS software release
+NimbRo-OP ROS Software Release
 ==============================
 
 Software
