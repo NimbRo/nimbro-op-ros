@@ -16,7 +16,7 @@ the main package documentation, please refer to `src/nimbro/README` and the `src
 
 Authors & License
 -----------------
-The patches and CAD robot parts were developed at the [Autonomous Intelligent Systems Group](http://ais.uni-bonn.de),
+The software was developed at the [Autonomous Intelligent Systems Group](http://ais.uni-bonn.de),
 [Rheinische Friedrich-Wilhelms-Universität Bonn](http://www.uni-bonn.de). The software contents of this repository are released
 under the BSD-3 license (see the LICENSE file for details).
 
