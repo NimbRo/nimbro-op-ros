@@ -101,10 +101,10 @@ function nimbro() {
 		deploy)
 			if nimbro make install; then
 				if [ -z "$2" ];then
-					rsync -tavz /nimbro/ nimbro@$BOT:/nimbro
+					rsync -avz --delete /nimbro/ nimbro@$BOT:/nimbro
 				else
 					target=$2
-					rsync -tavz /nimbro/ nimbro@$target:/nimbro
+					rsync -avz --delete /nimbro/ nimbro@$target:/nimbro
 				fi
 			fi
 			;;
@@ -115,7 +115,7 @@ function nimbro() {
 			echo "Running catkin_make..."
 			catkin_make $2 -DCMAKE_INSTALL_PREFIX="$INSTALLPATH"
 			;;
-		source)
+		source | src)
 			case "$2" in
 				"" | "nimbro")
 					cd "$ROOT/src/nimbro"
@@ -126,6 +126,22 @@ function nimbro() {
 				"rob" | "robot" | "robotcontrol")
 					cd "$ROOT/src/nimbro_robotcontrol"
 					;;
+				"status")
+					cd "$ROOT/src/nimbro"
+					echo
+					echo "*** nimbro repository ***"
+					git status
+					cd "$ROOT/src/nimbro_vis"
+					echo
+					echo "*** nimbro_vis repository ***"
+					git status
+					cd "$ROOT/src/nimbro_robotcontrol"
+					echo
+					echo "*** nimbro_robotcontrol repository ***"
+					git status
+					echo
+					cd "$ROOT/src/nimbro"
+					;;
 				*)
 					echo "Unknown parameter '$2': Going to main nimbro repository!"
 					echo "Usage: nimbro source [repository]"
@@ -133,6 +149,7 @@ function nimbro() {
 					echo "nimbro:              <omitted>, nimbro"
 					echo "nimbro_vis:          vis"
 					echo "nimbro_robotcontrol: rob, robot, robotcontrol"
+					echo "status:              Prints the git status of all the repositories"
 					cd "$ROOT/src/nimbro"
 					;;
 			esac
@@ -212,4 +229,4 @@ EOS
 	esac
 }
 
-complete -o nospace -W "make deploy remake-all make-doc make-docv pull source ssh host help getconfig" nimbro
+complete -o nospace -W "make deploy remake-all make-doc make-docv pull src source ssh host help getconfig" nimbro
