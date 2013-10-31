@@ -72,7 +72,7 @@ ret_t RosInterfaceLayerSM::init()
 	m_pub_headControlTarget = nh->advertise<head_control::LookAtTarget>("/robotcontrol/headcontrol/target", 1);
 
 	// Subscribe to the required services
-	m_srv_playMotion.setServiceClient(nh->serviceClient<motion_player::PlayMotion>("/motion_player/play"));
+	m_rsc_playMotion.setServiceClient(nh->serviceClient<motion_player::PlayMotion>("/motion_player/play"));
 
 	// Return that initialisation was successful
 	return RET_OK;
@@ -87,14 +87,14 @@ void RosInterfaceLayerSM::writeExternalData()
 
 
 	// Call the required services
-	if(playMotion.wasWrittenTo()) // Normally this is inside the RosServiceCaller, but in this special case our sensor has a different type to our data type so we can't pass it in
+	if(playMotion.wasWrittenTo()) // Normally this is inside the BCFRosServiceCaller, but in this special case our sensor has a different type to our data type so we can't pass it in
 	{
 		KeyMotionEnum motionType = playMotion.read();
 		if((motionType > KM_NO_MOTION) && (motionType < KM_NUM_MOTIONS))
 		{
 			motion_player::PlayMotion motion;
 			motion.request.name = KeyMotionName[motionType];
-			m_srv_playMotion.callService(motion);
+			m_rsc_playMotion.callService(motion);
 		}
 	}
 }

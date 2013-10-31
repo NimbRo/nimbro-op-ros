@@ -1,0 +1,7 @@
+<launch>
+	<param name="robot_description" command="cat $(find nimbro_op_model)/robots/$(optenv NIMBRO_ROBOT_VARIANT nimbro_op).xml" />
+
+	<include file="$(find launch)/config/server.launch" />
+
+	<test test-name="utilities_test" pkg="utilities" type="utilities_test" />
+</launch>

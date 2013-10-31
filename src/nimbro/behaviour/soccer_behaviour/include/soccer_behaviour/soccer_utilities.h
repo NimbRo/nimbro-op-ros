@@ -11,10 +11,10 @@
 #define SOCCER_UTILITIES_H
 
 // Includes - ROS
-#include <ros/time.h>
 #include <ros/service_client.h>
 
 // Includes - Libraries
+#include <utilities/rostiming.h>
 #include <behaviour_control/behaviour_control.h>
 #include <boost/utility/enable_if.hpp> // For boost::enable_if
 #include <boost/type_traits/is_convertible.hpp> // For boost::is_convertible
@@ -22,12 +22,14 @@
 // Includes - Template specialisation types
 #include <gait/GaitCommand.h>
 
-// Includes - C++ Standard Library
-#include <cstddef>
-
 // Soccer behaviour namespace
 namespace soccerbehaviour
 {
+	// Namespaces (import some of the utilities classes)
+	using util::RosTimeMarker;
+	using util::RosTimeTracker;
+	using util::RosServiceCaller;
+	
 	/**
 	* @class ChangeMonitor
 	*
@@ -87,103 +89,16 @@ namespace soccerbehaviour
 	}
 
 	/**
-	* @class RosTimeMarker
+	* @class BCFRosServiceCaller
 	*
-	* @brief Class that facilitates duration timing using the ROS-provided time
-	**/
-	class RosTimeMarker
-	{
-	public:
-		// Constructors
-		RosTimeMarker() : markerTime(0), iHaveMarker(false) {}
-
-		// Timing functions
-		void reset() { iHaveMarker = false; }
-		void setMarker()
-		{
-			// Record the current ROS time
-			markerTime = ros::Time::now();
-			iHaveMarker = true;
-		}
-		bool haveMarker() const { return iHaveMarker; }
-		double getElapsed() const { return (iHaveMarker ? (ros::Time::now() - markerTime).toSec() : -1.0); } //!< Returns the current elapsed time since the marker was set (returns -1.0 if no marker has been set - check this if you must as `getElapsed() < 0.0`)
-		bool hasElapsed(double duration) const { return !iHaveMarker || (iHaveMarker && ((ros::Time::now() - markerTime).toSec() >= duration)); } //!< Returns whether a certain time duration has elapsed since the time marker was set (returns true if no marker has been set)
-
-	private:
-		// Internal variables
-		ros::Time markerTime;
-		bool iHaveMarker;
-	};
-
-	/**
-	* @class RosTimeTracker
-	*
-	* @brief Class that facilitates multi-duration time tracking using the ROS-provided time
-	**/
-	class RosTimeTracker
-	{
-	public:
-		// Constructors
-		explicit RosTimeTracker(std::size_t N) : N(N)
-		{
-			// Make sure we have room for at least one marker
-			if(N < 1) N = 1;
-
-			// Allocate memory for the marker and flag arrays
-			markerTime = new ros::Time[N];
-			iHaveMarker = new bool[N];
-
-			// Initialise the arrays explicitly
-			for(std::size_t i = 0;i < N;i++)
-			{
-				markerTime[i].fromSec(0);
-				iHaveMarker[i] = false;
-			}
-		}
-		virtual ~RosTimeTracker() { delete[] markerTime; }
-
-		// Timing functions (in all these functions m is the index of the marker, valid values are 0 -> N-1)
-		void setMarker(std::size_t m)
-		{
-			// Error checking
-			if(m >= N) return;
-
-			// Record the current ROS time in the appropriate marker
-			markerTime[m] = ros::Time::now();
-			iHaveMarker[m] = true;
-		}
-		bool haveMarker(std::size_t m) const { return (m < N ? iHaveMarker[m] : false); }
-		double getElapsed(std::size_t m) const
-		{
-			// Return the elapsed time since marker m was set
-			if(m >= N) return -1.0;
-			else return (iHaveMarker[m] ? (ros::Time::now() - markerTime[m]).toSec() : -1.0);
-		}
-		bool hasElapsed(std::size_t m, double duration) const
-		{
-			// Return whether the given duration has elapsed since marker m was set
-			if(m >= N) return false;
-			else return !iHaveMarker[m] || (iHaveMarker[m] && ((ros::Time::now() - markerTime[m]).toSec() >= duration));
-		}
-
-	private:
-		// Internal variables
-		ros::Time* markerTime;
-		bool* iHaveMarker;
-		std::size_t N;
-	};
-
-	/**
-	* @class RosServiceCaller
-	*
-	* @brief Provides some basic functionality for controlling calls to ROS services
+	* @brief Provides some basic functionality for controlling calls to ROS services (specific to the Behaviour Control Framework)
 	**/
 	template <class T>
-	class RosServiceCaller
+	class BCFRosServiceCaller
 	{
 	public:
 		// Constructors
-		RosServiceCaller(double reissueDelay, double failRetryDelay, behaviourcontrol::Sensor<T>* sensor = NULL)
+		BCFRosServiceCaller(double reissueDelay, double failRetryDelay, behaviourcontrol::Sensor<T>* sensor = NULL)
 			: sensor(sensor)
 			, failRetryDelay(failRetryDelay)
 			, reissueDelay(reissueDelay)
@@ -214,7 +129,7 @@ namespace soccerbehaviour
 				else lastBadCall.setMarker();
 			}
 
-			// Return whether the service call was carried out AND was successful (or not)
+			// Return whether the service call was carried out AND was successful
 			return ret;
 		}
 

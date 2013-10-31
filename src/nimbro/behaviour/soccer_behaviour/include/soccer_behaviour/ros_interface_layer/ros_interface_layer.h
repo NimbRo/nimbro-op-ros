@@ -78,7 +78,7 @@ namespace soccerbehaviour
 			, gaitCommand(this, "ControlLayer/gaitCommand")
 			, headControlTarget(this, "ControlLayer/headControlTarget")
 			, playMotion(this, "ControlLayer/playMotion")
-			, m_srv_playMotion(2.0, 0.3)
+			, m_rsc_playMotion(2.0, 0.3)
 		{}
 
 		// Parent layer and manager
@@ -103,8 +103,7 @@ namespace soccerbehaviour
 		ros::Publisher m_pub_headControlTarget;
 
 		// ROS services
-//		RosServiceCaller<keyframe_player_hack::PlayMotion> ;
-		RosServiceCaller<motion_player::PlayMotion> m_srv_playMotion;
+		BCFRosServiceCaller<motion_player::PlayMotion> m_rsc_playMotion;
 	};
 
 	/**

@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-address")
 find_package(catkin REQUIRED COMPONENTS
 	behaviour_control state_controller test_utilities
 	robotcontrol roscpp config_server tf plot_msgs gait
-	head_control field_model
+	head_control field_model utilities
 )
 
 find_library(Eigen3 REQUIRED)

@@ -55,6 +55,8 @@ target_link_libraries(plotter
 	${QT_LIBRARIES}
 )
 
+add_dependencies(plotter plotter_gencpp ${catkin_EXPORTED_TARGETS})
+
 install(TARGETS plotter
 	LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )

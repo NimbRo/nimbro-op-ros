@@ -7,7 +7,7 @@
 
 // Include configurations
 #ifndef VERBOSE_TEST
-#define VERBOSE_TEST // Comment this line out to inhibit printing to console
+//#define VERBOSE_TEST // Comment this line out to inhibit printing to console
 #endif /* VERBOSE_TEST */
 
 // Includes

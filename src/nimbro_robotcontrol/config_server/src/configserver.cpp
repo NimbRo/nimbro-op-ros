@@ -145,7 +145,7 @@ ConfigServer::ConfigServer()
 	m_srv_save = m_nh.advertiseService("save", &ConfigServer::handleSave, this);
 	m_srv_load = m_nh.advertiseService("load", &ConfigServer::handleLoad, this);
 
-	m_publishParamsTimer = m_nh.createTimer(ros::Duration(1.0), boost::bind(&ConfigServer::updateParameterList, this), true);
+	m_publishParamsTimer = m_nh.createTimer(ros::Duration(1.0), boost::bind(&ConfigServer::updateParameterList, this));
 
 	if(!load(""))
 	{
@@ -436,6 +436,8 @@ static void* notify_thread(void*)
 int main(int argc, char** argv)
 {
 	ros::init(argc, argv, "config_server");
+
+	ros::NodeHandle nh("~");
 
 	config_server::NotifyThread::instance();
 

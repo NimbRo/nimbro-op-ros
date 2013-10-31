@@ -49,6 +49,7 @@ typedef boost::shared_ptr<MotionModule> MotionModulePtr;
  * ----------------- | --------------- | ------------------------------------------------------------
  * hw_interface      | string          | The hardware interface (e.g. robotcontrol::RobotInterface)
  * motion_modules    | list of strings | The motion modules to load (e.g. [Gait])
+ * publish_tf        | bool            | Publish TF directly (default)
  **/
 class RobotControl
 {
@@ -75,6 +76,16 @@ public:
 private:
 	ros::NodeHandle m_nh;
 
+	// Plugin loader for the Hardware Interface
+	pluginlib::ClassLoader<HardwareInterface> m_hwLoader;
+	boost::shared_ptr<HardwareInterface> m_hw;
+
+	// Plugin loader for Motion Modules
+	pluginlib::ClassLoader<MotionModule> m_pluginLoader;
+	std::vector<MotionModulePtr> m_modules;
+
+
+
 	//! The URDF robot description
 	boost::shared_ptr<urdf::Model> m_model;
 
@@ -92,13 +103,7 @@ private:
 	ros::Publisher m_pub_diag;
 	ros::Timer m_diagnosticsTimer;
 
-	// Plugin loader for Motion Modules
-	pluginlib::ClassLoader<MotionModule> m_pluginLoader;
-	std::vector<MotionModulePtr> m_modules;
 
-	// Plugin loader for the Hardware Interface
-	pluginlib::ClassLoader<HardwareInterface> m_hwLoader;
-	boost::shared_ptr<HardwareInterface> m_hw;
 
 	// Fading
 	actionlib::SimpleActionServer<FadeTorqueAction> m_fadeTorqueServer;
@@ -132,6 +137,8 @@ private:
 	ros::Duration m_dur_tx;
 	ros::Duration m_dur_rx;
 	ros::Duration m_dur_motion;
+
+	bool m_publishTF;
 
 	//! Helper for handling joint state messages
 	void doHandleJSCommand(const sensor_msgs::JointStatePtr& cmd, bool raw = false);

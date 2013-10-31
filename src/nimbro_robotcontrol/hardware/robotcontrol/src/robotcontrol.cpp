@@ -63,9 +63,9 @@ namespace robotcontrol
 
 RobotControl::RobotControl()
  : m_nh("~")
- , m_pub_js_counter(0)
- , m_pluginLoader("robotcontrol", "robotcontrol::MotionModule")
  , m_hwLoader("robotcontrol", "robotcontrol::HardwareInterface")
+ , m_pluginLoader("robotcontrol", "robotcontrol::MotionModule")
+ , m_pub_js_counter(0)
  , m_fadeTorqueServer(m_nh, "fade_torque", false)
  , m_fadeTorqueClient("/robotcontrol/fade_torque")
  , m_fadeTorqueState(0)
@@ -85,6 +85,8 @@ RobotControl::RobotControl()
 	m_pub_markers = m_nh.advertise<visualization_msgs::MarkerArray>("/visualization_marker_array", 1);
 
 	m_sub_btn = m_nh.subscribe("/button", 1, &RobotControl::handleButton, this);
+
+	m_nh.param("publish_tf", m_publishTF, true);
 
 	// The diagnostics message is sent out in a periodic timer
 	m_diagnosticsTimer = m_nh.createTimer(ros::Duration(1.0), &RobotControl::sendDiagnostics, this);
@@ -396,13 +398,16 @@ void RobotControl::step()
 		publishJointStates();
 		publishJointStateCommands();
 
-		if(m_publishCommand())
+		if(m_publishTF)
 		{
-			ROS_WARN_THROTTLE(1.0, "robotcontrol/publishCommand is active! This will send invalid transforms to other nodes!");
-			m_robotModel.publishTF(false);
+			if(m_publishCommand())
+			{
+				ROS_WARN_THROTTLE(1.0, "robotcontrol/publishCommand is active! This will send invalid transforms to other nodes!");
+				m_robotModel.publishTF(false);
+			}
+			else
+				m_robotModel.publishTF(true);
 		}
-		else
-			m_robotModel.publishTF(true);
 
 		for(size_t i = 0; i < m_modules.size(); ++i)
 			m_modules[i]->publishTransforms();
