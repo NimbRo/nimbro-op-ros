@@ -24,7 +24,7 @@ work on the software):
 . /opt/ros/groovy/setup.bash
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now clone our NimbRo repositoy
+Now clone our NimbRo repository:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
 cd ~            # Or wherever you want to put the repository
 git clone [https://github.com/NimbRo/nimbro-op-ros](https://github.com/NimbRo/nimbro-op-ros)
@@ -90,16 +90,22 @@ code using the following command:
 nimbro make
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is a short description of the nimbro tool:
+Here are a few examples of use of the nimbro tool:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
-nimbro              # Go to the nimbro root directory
-nimbro source       # Go to the nimbro source directory
-nimbro make         # Compile and install the NimbRo framework
-nimbro remake-all   # Delete the compiled libraries and recompile the framework
-nimbro make-doc     # Generate the source code documentation
-nimbro deploy       # Copy the installed files to the robot
-nimbro host         # Set the standart robot and the ROS master
-nimbro ssh          # Open a ssh shell to the set robot
-nimbro help         # Display help for the nimbro tool
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	nimbro                  # Go to the nimbro root directory
+	nimbro source           # Go to the nimbro source directory
+	nimbro src              # Go to the nimbro source directory
+	nimbro src rob          # Go to the nimbro_robotcontrol source directory
+	nimbro src vis          # Go to the nimbro_vis source directory
+	nimbro make             # Build the NimbRo framework
+	nimbro make tests       # Build the framework unit tests
+	nimbro make run_tests   # Build and run the framework unit tests
+	nimbro remake-all       # Delete the devel and build folders and recompile the framework
+	nimbro make-doc         # Generate the source code documentation
+	nimbro make-docv        # Generate the source code documentation (verbose)
+	nimbro make-doc open    # Generate the source code documentation and attempt to open it
+	nimbro deploy           # Build the framework and copy the installed files to the robot
+	nimbro deploy xs2.local # Deploy to the xs2 robot (may not be the set robot)
+	nimbro host xs2.local   # Set xs2 as the target robot and the ROS master
+	nimbro ssh              # Open a ssh shell to the set robot
+	nimbro help             # Display help for the nimbro tool
