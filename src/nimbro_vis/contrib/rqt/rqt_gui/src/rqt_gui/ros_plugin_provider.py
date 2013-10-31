@@ -45,8 +45,6 @@ class RosPluginProvider(PluginProvider):
 
     """Base class for providing plugins based on the ROS package system."""
 
-    _cached_plugins = {}
-
     def __init__(self, export_tag, base_class_type):
         super(RosPluginProvider, self).__init__()
         self.setObjectName('RosPluginProvider')
@@ -55,16 +53,16 @@ class RosPluginProvider(PluginProvider):
         self._base_class_type = base_class_type
         self._plugin_descriptors = {}
 
-    def discover(self):
+    def discover(self, discovery_data):
         """
         Discover the plugins.
         The information of the `PluginDescriptor`s are extracted from the plugin manifests.
         """
         # search for plugins
         plugin_descriptors = []
-        plugin_file_list = self._get_plugins(self._export_tag)
-        for package_name, xml_file_name in plugin_file_list:
-            plugin_descriptors += self._parse_plugin_xml(package_name, xml_file_name)
+        plugin_file_list = self._find_plugins(self._export_tag, discovery_data)
+        for package_name, plugin_xml in plugin_file_list:
+            plugin_descriptors += self._parse_plugin_xml(package_name, plugin_xml)
         # add list of discovered plugins to dictionary of known descriptors index by the plugin id
         for plugin_descriptor in plugin_descriptors:
             self._plugin_descriptors[plugin_descriptor.plugin_id()] = plugin_descriptor
@@ -73,7 +71,7 @@ class RosPluginProvider(PluginProvider):
     def load(self, plugin_id, plugin_context):
         # get class reference from plugin descriptor
         attributes = self._plugin_descriptors[plugin_id].attributes()
-        sys.path.append(os.path.join(attributes['package_path'], attributes['library_path']))
+        sys.path.append(os.path.join(attributes['plugin_path'], attributes['library_path']))
 
         try:
             module = __builtin__.__import__(attributes['module_name'], fromlist=[attributes['class_from_class_type']], level=0)
@@ -98,23 +96,20 @@ class RosPluginProvider(PluginProvider):
     def unload(self, plugin_instance):
         pass
 
-    def _get_plugins(self, export_tag):
-        # query available plugins only once
-        if export_tag not in RosPluginProvider._cached_plugins.keys():
-            RosPluginProvider._cached_plugins[export_tag] = self._find_plugins(export_tag)
-        return RosPluginProvider._cached_plugins[export_tag]
-
-    def _find_plugins(self, export_tag):
+    def _find_plugins(self, export_tag, discovery_data):
         raise NotImplementedError
 
-    def _parse_plugin_xml(self, package_name, xml_file_name):
+    def _parse_plugin_xml(self, package_name, plugin_xml):
         plugin_descriptors = []
-        package_path = get_package_path(package_name)
+
+        if not os.path.isfile(plugin_xml):
+            qCritical('RosPluginProvider._parse_plugin_xml() plugin file "%s" in package "%s" not found' % (plugin_xml, package_name))
+            return plugin_descriptors
 
         try:
-            root = ElementTree.parse(xml_file_name)
+            root = ElementTree.parse(plugin_xml)
         except Exception:
-            qCritical('RosPluginProvider._parse_plugin_xml() could not parse "%s" of plugin "%s"' % (xml_file_name, package_name))
+            qCritical('RosPluginProvider._parse_plugin_xml() could not parse "%s" in package "%s"' % (plugin_xml, package_name))
             return plugin_descriptors
         for library_el in root.getiterator('library'):
             library_path = library_el.attrib['path']
@@ -123,7 +118,7 @@ class RosPluginProvider(PluginProvider):
                 # collect common attributes
                 attributes = {
                     'package_name': package_name,
-                    'package_path': package_path,
+                    'plugin_path': os.path.dirname(plugin_xml),
                     'library_path': library_path,
                 }
 

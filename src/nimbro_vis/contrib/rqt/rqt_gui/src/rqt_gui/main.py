@@ -32,57 +32,48 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import argparse
 import os
 import sys
+
+import rospy
+from rospkg.rospack import RosPack
 
 from qt_gui.main import Main as Base
 
 
 class Main(Base):
 
-    def __init__(self, filename=None):
-        super(Main, self).__init__(filename, 'rqt_gui')
-        self._plugin_cache = None
+    def __init__(self, filename=None, ros_pack=None):
+        rp = ros_pack or RosPack()
+        qtgui_path = rp.get_path('qt_gui')
+        super(Main, self).__init__(qtgui_path, invoked_filename=filename, settings_filename='rqt_gui')
+        self._ros_pack = rp
 
     def main(self, argv=None, standalone=None, plugin_argument_provider=None):
         if argv is None:
             argv = sys.argv
 
         # ignore ROS specific remapping arguments (see http://www.ros.org/wiki/Remapping%20Arguments)
-        remapping_arg_prefixes = ['__name', '__log', '__ip', '__hostname', '__master', '__ns']
-        remapping_arg_prefixes = ['%s:=' % arg for arg in remapping_arg_prefixes]
-        argv = [argv[0]] + [arg for arg in argv[1:] if not [p for p in remapping_arg_prefixes if arg.startswith(p)]]
+        argv = rospy.myargv(argv)
 
         return super(Main, self).main(argv, standalone=standalone, plugin_argument_provider=plugin_argument_provider)
 
-    def add_arguments(self, parser, standalone=False, plugin_argument_provider=None):
-        common_group = super(Main, self).add_arguments(parser, standalone=standalone, plugin_argument_provider=plugin_argument_provider)
-        common_group.add_argument('-c', '--cache-plugins', dest='cache_plugins', default=False, action='store_true',
-            help='cache list of available plugins (trading faster start-up for not up-to-date plugin list)')
+    def create_application(self, argv):
+        from python_qt_binding.QtGui import QIcon
+        app = super(Main, self).create_application(argv)
+        logo = os.path.join(self._ros_pack.get_path('rqt_gui'), 'resource', 'rqt.png')
+        icon = QIcon(logo)
+        app.setWindowIcon(icon)
+        return app
 
     def _add_plugin_providers(self):
-        if self._options.cache_plugins:
-            from .ros_plugin_provider_cache import RosPluginProviderCache
-            self._plugin_cache = RosPluginProviderCache()
-            self._plugin_cache.load()
-
-        try:
-            from .rospkg_plugin_provider import RospkgPluginProvider
-            ActualRosPluginProvider = RospkgPluginProvider
-        except ImportError:
-            from .roslib_plugin_provider import RoslibPluginProvider
-            ActualRosPluginProvider = RoslibPluginProvider
-
         # do not import earlier as it would import Qt stuff without the proper initialization from qt_gui.main
         from qt_gui.recursive_plugin_provider import RecursivePluginProvider
-        self.plugin_providers.append(ActualRosPluginProvider('qt_gui', 'qt_gui_py::Plugin'))
-        self.plugin_providers.append(RecursivePluginProvider(ActualRosPluginProvider('qt_gui', 'qt_gui_py::PluginProvider')))
-        self.plugin_providers.append(RecursivePluginProvider(ActualRosPluginProvider('rqt_gui', 'rqt_gui_py::PluginProvider')))
-
-    def _caching_hook(self):
-        if self._plugin_cache is not None:
-            self._plugin_cache.save()
+        from .rospkg_plugin_provider import RospkgPluginProvider
+        RospkgPluginProvider.rospack = self._ros_pack
+        self.plugin_providers.append(RospkgPluginProvider('qt_gui', 'qt_gui_py::Plugin'))
+        self.plugin_providers.append(RecursivePluginProvider(RospkgPluginProvider('qt_gui', 'qt_gui_py::PluginProvider')))
+        self.plugin_providers.append(RecursivePluginProvider(RospkgPluginProvider('rqt_gui', 'rqt_gui_py::PluginProvider')))
 
     def _add_reload_paths(self, reload_importer):
         super(Main, self)._add_reload_paths(reload_importer)
