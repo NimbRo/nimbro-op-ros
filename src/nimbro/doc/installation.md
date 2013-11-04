@@ -95,11 +95,13 @@ Here are a few examples of use of the nimbro tool:
 	nimbro                  # Go to the nimbro root directory
 	nimbro source           # Go to the nimbro source directory
 	nimbro src              # Go to the nimbro source directory
+	nimbro src nim          # Go to the nimbro source directory
 	nimbro src rob          # Go to the nimbro_robotcontrol source directory
 	nimbro src vis          # Go to the nimbro_vis source directory
 	nimbro make             # Build the NimbRo framework
 	nimbro make tests       # Build the framework unit tests
 	nimbro make run_tests   # Build and run the framework unit tests
+	nimbro clean            # Clean all build products and temporary files
 	nimbro remake-all       # Delete the devel and build folders and recompile the framework
 	nimbro make-doc         # Generate the source code documentation
 	nimbro make-docv        # Generate the source code documentation (verbose)
