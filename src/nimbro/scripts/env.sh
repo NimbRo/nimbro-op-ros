@@ -1,30 +1,37 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Save the directory this script is located in
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-ROOT="$DIR"
-while [[ ! -e "$ROOT/src/CMakeLists.txt" ]]; do
-	ROOT=$(dirname "$ROOT")
-	if [[ "$ROOT" == "/" ]]; then
-		echo "Warning: Could not find ROS catkin workspace"
+# Find the parent directory that corresponds to the NimbRo-OP root
+NIMBRO_ROOT="$SCRIPTS_DIR"
+while [[ ! -e "$NIMBRO_ROOT/src/CMakeLists.txt" ]]; do
+	NIMBRO_ROOT=$(dirname "$NIMBRO_ROOT")
+	if [[ "$NIMBRO_ROOT" == "/" ]]; then
+		echo "Warning: Could not find ROS catkin workspace!"
 		return
 	fi
-done	
+done
 
+# Initialise other variables
 INSTALLPATH="/nimbro"
 BOT=xs2.local
 
-. "$ROOT/devel/setup.bash"
+# Set up environment variables for catkin and ROS
+. "$NIMBRO_ROOT/devel/setup.bash"
 export ROSCONSOLE_FORMAT='[${severity}][${node}->${function}]: ${message}'
 
 # Enable the UDP hinter per default if running roslaunch or rosrun
 REAL_ROSLAUNCH=$(which roslaunch)
 REAL_ROSRUN=$(which rosrun)
 
+# Use Avahi for name resolution
+export ROS_HOSTNAME=`hostname`.local
+
 function enable_udp() {
-	if [[ -e "$ROOT/devel/lib/libudp_hinter.so" ]]; then
+	if [[ -e "$NIMBRO_ROOT/devel/lib/libudp_hinter.so" ]]; then
 		echo "env.sh: Enabling UDP hinter library..."
-		export LD_PRELOAD="$ROOT/devel/lib/libudp_hinter.so"
+		export LD_PRELOAD="$NIMBRO_ROOT/devel/lib/libudp_hinter.so"
 	fi
 }
 
@@ -32,7 +39,7 @@ function enable_udp() {
 # a chance to restore LD_PRELOAD to what it was again, then you can use this
 # function to manually unset LD_PRELOAD and disable the UDP hinter library again.
 function disable_udp() {
-	if [[ $LD_PRELOAD == "$ROOT/devel/lib/libudp_hinter.so" ]]; then
+	if [[ $LD_PRELOAD == "$NIMBRO_ROOT/devel/lib/libudp_hinter.so" ]]; then
 		echo "env.sh: Disabling UDP hinter library..."
 		unset LD_PRELOAD
 	fi
@@ -72,23 +79,20 @@ function pullgit() {
 	fi
 }
 
-# Use Avahi for name resolution
-export ROS_HOSTNAME=`hostname`.local
-
 function nimbro() {
-	cd $ROOT
+	cd "$NIMBRO_ROOT"
 	case $1 in
 		make)
 			catkin_make $2 -DCMAKE_INSTALL_PREFIX="$INSTALLPATH"
 			;;
 		make-doc | make-docv)
 			if [[ $1 == "make-docv" ]]; then
-				"$DIR"/../doc/generate.sh
+				"$SCRIPTS_DIR"/../doc/generate.sh
 			else
-				"$DIR"/../doc/generate.sh | grep warning || true
+				"$SCRIPTS_DIR"/../doc/generate.sh | grep warning || true
 			fi
 			if [[ $2 == "open" ]]; then
-				DOC_URL="$DIR/../doc/NimbRo_Soccer_Package.html"
+				DOC_URL="$SCRIPTS_DIR/../doc/NimbRo_Soccer_Package.html"
 				if which xdg-open > /dev/null; then
 					xdg-open $DOC_URL
 				elif which gnome-open > /dev/null; then
@@ -108,66 +112,76 @@ function nimbro() {
 				fi
 			fi
 			;;
+		clean)
+			echo "Working directory: $(pwd)"
+			echo "Clearing out build products..."
+			rm -rf "$NIMBRO_ROOT/build" "$NIMBRO_ROOT/devel" || echo "Something went wrong. Do the folders even exist?"
+			echo "Clearing out temporary files..."
+			find . -name "*~" -type f -printf "Removing file %p\n" -delete
+			echo "Clearing out .directory files..."
+			find . -name ".directory" -type f -printf "Removing file %p\n" -delete
+			echo "Done"
+			;;
 		remake-all)
 			disable_udp
 			echo "Removing build/ and devel/ folders from nimbro project root..."
-			rm -rf "$ROOT/build" "$ROOT/devel"
+			rm -rf "$NIMBRO_ROOT/build" "$NIMBRO_ROOT/devel"
 			echo "Running catkin_make..."
 			catkin_make $2 -DCMAKE_INSTALL_PREFIX="$INSTALLPATH"
 			;;
 		source | src)
 			case "$2" in
-				"" | "nimbro")
-					cd "$ROOT/src/nimbro"
+				"" | "nim" | "nimbro")
+					cd "$NIMBRO_ROOT/src/nimbro"
 					;;
-				"vis")
-					cd "$ROOT/src/nimbro_vis"
+				"vis" | "visualization")
+					cd "$NIMBRO_ROOT/src/nimbro_vis"
 					;;
 				"rob" | "robot" | "robotcontrol")
-					cd "$ROOT/src/nimbro_robotcontrol"
-					;;
-				"status")
-					cd "$ROOT/src/nimbro"
-					echo
-					echo "*** nimbro repository ***"
-					git status
-					cd "$ROOT/src/nimbro_vis"
-					echo
-					echo "*** nimbro_vis repository ***"
-					git status
-					cd "$ROOT/src/nimbro_robotcontrol"
-					echo
-					echo "*** nimbro_robotcontrol repository ***"
-					git status
-					echo
-					cd "$ROOT/src/nimbro"
+					cd "$NIMBRO_ROOT/src/nimbro_robotcontrol"
 					;;
 				*)
 					echo "Unknown parameter '$2': Going to main nimbro repository!"
 					echo "Usage: nimbro source [repository]"
 					echo "[repository] can be:"
-					echo "nimbro:              <omitted>, nimbro"
-					echo "nimbro_vis:          vis"
+					echo "nimbro:              <empty>, nim, nimbro"
+					echo "nimbro_vis:          vis, visualization"
 					echo "nimbro_robotcontrol: rob, robot, robotcontrol"
-					echo "status:              Prints the git status of all the repositories"
-					cd "$ROOT/src/nimbro"
+					cd "$NIMBRO_ROOT/src/nimbro"
 					;;
 			esac
 			;;
+		status)
+			echo "Printing the git status of all the repositories..."
+			cd "$NIMBRO_ROOT/src/nimbro"
+			echo
+			echo "*** nimbro repository ***"
+			git status
+			cd "$NIMBRO_ROOT/src/nimbro_vis"
+			echo
+			echo "*** nimbro_vis repository ***"
+			git status
+			cd "$NIMBRO_ROOT/src/nimbro_robotcontrol"
+			echo
+			echo "*** nimbro_robotcontrol repository ***"
+			git status
+			echo
+			cd "$NIMBRO_ROOT/src/nimbro"
+			;;
 		pull)
-			cd "$ROOT/src/nimbro"
+			cd "$NIMBRO_ROOT/src/nimbro"
 			echo
 			echo "*** Pulling nimbro repository ***"
 			pullgit
-			cd "$ROOT/src/nimbro_vis"
+			cd "$NIMBRO_ROOT/src/nimbro_vis"
 			echo
 			echo "*** Pulling nimbro_vis repository ***"
 			pullgit
-			cd "$ROOT/src/nimbro_robotcontrol"
+			cd "$NIMBRO_ROOT/src/nimbro_robotcontrol"
 			echo
 			echo "*** Pulling nimbro_robotcontrol repository ***"
 			pullgit
-			cd "$ROOT/src"
+			cd "$NIMBRO_ROOT/src"
 			;;
 		host)
 			host=$2
@@ -216,6 +230,7 @@ Commands:
   host <HOST> Use HOST as ROS master, e.g. nimbro host xs2.local
   make        Run catkin_make with correct arguments in the correct directory
   make-doc    Compile the doxygen documentation (use 'make-doc open' to automatically open the html)
+  clean       Removes any build products and temporary files
   pull        Pull and rebase the latest commits for each of the source repositories
   remake-all  Hard clean build and devel folders then run catkin_make to remake entire project
   source      cd to the nimbro source directory
@@ -229,4 +244,5 @@ EOS
 	esac
 }
 
-complete -o nospace -W "make deploy remake-all make-doc make-docv pull src source ssh host help getconfig" nimbro
+complete -o nospace -W "make deploy remake-all make-doc make-docv pull clean src source status ssh host help getconfig" nimbro
+# EOF
