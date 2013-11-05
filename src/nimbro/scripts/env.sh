@@ -15,10 +15,10 @@ done
 
 # Initialise other variables
 INSTALLPATH="/nimbro"
-BOT=xs2.local
+BOT="xs2.local"
 
 # Set up environment variables for catkin and ROS
-. "$NIMBRO_ROOT/devel/setup.bash"
+source "$NIMBRO_ROOT/devel/setup.bash"
 export ROSCONSOLE_FORMAT='[${severity}][${node}->${function}]: ${message}'
 
 # Enable the UDP hinter per default if running roslaunch or rosrun
@@ -39,7 +39,7 @@ function enable_udp() {
 # a chance to restore LD_PRELOAD to what it was again, then you can use this
 # function to manually unset LD_PRELOAD and disable the UDP hinter library again.
 function disable_udp() {
-	if [[ $LD_PRELOAD == "$NIMBRO_ROOT/devel/lib/libudp_hinter.so" ]]; then
+	if [[ "$LD_PRELOAD" == "$NIMBRO_ROOT/devel/lib/libudp_hinter.so" ]]; then
 		echo "env.sh: Disabling UDP hinter library..."
 		unset LD_PRELOAD
 	fi
@@ -48,16 +48,16 @@ function disable_udp() {
 function exec_with_udp() {
 	SAVED_LD_PRELOAD="$LD_PRELOAD"
 	enable_udp
-	$*
+	"$@"
 	export LD_PRELOAD="$SAVED_LD_PRELOAD"
 }
 
 function roslaunch() {
-	exec_with_udp "$REAL_ROSLAUNCH" $*
+	exec_with_udp "$REAL_ROSLAUNCH" "$@"
 }
 
 function rosrun() {
-	exec_with_udp "$REAL_ROSRUN" $*
+	exec_with_udp "$REAL_ROSRUN" "$@"
 }
 
 function pullgit() {
@@ -81,22 +81,24 @@ function pullgit() {
 
 function nimbro() {
 	cd "$NIMBRO_ROOT"
-	case $1 in
+	case "$1" in
+		"")
+			;;
 		make)
-			catkin_make $2 -DCMAKE_INSTALL_PREFIX="$INSTALLPATH"
+			catkin_make "${@:2}" -DCMAKE_INSTALL_PREFIX="$INSTALLPATH"
 			;;
 		make-doc | make-docv)
-			if [[ $1 == "make-docv" ]]; then
+			if [[ "$1" == "make-docv" ]]; then
 				"$SCRIPTS_DIR"/../doc/generate.sh
 			else
 				"$SCRIPTS_DIR"/../doc/generate.sh | grep warning || true
 			fi
-			if [[ $2 == "open" ]]; then
+			if [[ "$2" == "open" ]]; then
 				DOC_URL="$SCRIPTS_DIR/../doc/NimbRo_Soccer_Package.html"
 				if which xdg-open > /dev/null; then
-					xdg-open $DOC_URL
+					xdg-open "$DOC_URL"
 				elif which gnome-open > /dev/null; then
-					gnome-open $DOC_URL
+					gnome-open "$DOC_URL"
 				else
 					echo "Could not detect the web browser to open the documentation with."
 				fi
@@ -107,7 +109,7 @@ function nimbro() {
 				if [ -z "$2" ];then
 					rsync -avz --delete /nimbro/ nimbro@$BOT:/nimbro
 				else
-					target=$2
+					target="$2"
 					rsync -avz --delete /nimbro/ nimbro@$target:/nimbro
 				fi
 			fi
@@ -127,7 +129,7 @@ function nimbro() {
 			echo "Removing build/ and devel/ folders from nimbro project root..."
 			rm -rf "$NIMBRO_ROOT/build" "$NIMBRO_ROOT/devel"
 			echo "Running catkin_make..."
-			catkin_make $2 -DCMAKE_INSTALL_PREFIX="$INSTALLPATH"
+			catkin_make "${@:2}" -DCMAKE_INSTALL_PREFIX="$INSTALLPATH"
 			;;
 		source | src)
 			case "$2" in
@@ -184,7 +186,7 @@ function nimbro() {
 			cd "$NIMBRO_ROOT/src"
 			;;
 		host)
-			host=$2
+			host="$2"
 
 			export ROS_MASTER_URI=http://$host:11311
 			if ! ping -c1 $host > /dev/null; then
@@ -199,18 +201,18 @@ function nimbro() {
 			if ! rostopic list > /dev/null; then
 				echo "Could not connect to ROS master running at '$host'"
 				echo "Setting it as master anyway."
-				BOT=$2
+				BOT="$2"
 				return
 			fi
 
 			echo "Connected."
-			BOT=$2
+			BOT="$2"
 			;;
 		ssh)
 			if [ -z "$2" ]; then
 			    ssh nimbro@$BOT
 			else
-				target=$2
+				target="$2"
 				ssh nimbro@$target
 			fi
 			;;
@@ -240,7 +242,8 @@ The default command just cd's into the catkin workspace.
 EOS
 			;;
 		*)
-			$*
+			echo "Unrecognised nimbro command!"
+			echo "Try: nimbro help"
 	esac
 }
 
