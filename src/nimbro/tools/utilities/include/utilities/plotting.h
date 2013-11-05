@@ -9,7 +9,7 @@
 // Includes
 #include <string>
 #include <ros/node_handle.h>
-#include <ros/this_node.h>
+#include <ros/this_node.h> // Note: ros::this_node::getName() returns the node name with a '/' at the front!
 #include <plot_msgs/Plot.h>
 
 // Utilities namespace
@@ -66,7 +66,7 @@ namespace util
 			// Terminate both ends of the basename with slashes
 			basename = baseName;
 			if(basename.empty()) basename = DEFAULT_BASENAME;
-			if(basename.at(0) == '~') basename.replace(0, 1, "/" + ros::this_node::getName() + "/"); 
+			if(basename.at(0) == '~') basename.replace(0, 1, ros::this_node::getName() + "/");
 			if(basename.at(0) != '/') basename.insert(0, "/");
 			if(basename.at(basename.length()-1) != '/') basename.insert(basename.length(), "/");
 

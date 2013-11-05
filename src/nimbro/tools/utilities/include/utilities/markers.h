@@ -10,7 +10,7 @@
 #include <string>
 #include <ros/names.h>
 #include <ros/node_handle.h>
-#include <ros/this_node.h>
+#include <ros/this_node.h> // Note: ros::this_node::getName() returns the node name with a '/' at the front!
 #include <visualization_msgs/MarkerArray.h>
 
 // Utilities namespace
@@ -19,6 +19,9 @@ namespace util
 	// Classes
 	class MarkerManager;
 	class GenMarker;
+	class SphereMarker;
+	class CubeMarker;
+	class BoxMarker;
 
 	/**
 	* @class GenMarker
@@ -267,7 +270,8 @@ namespace util
 			}
 
 			// Replace the ~ character explicitly to ensure naming convention is consistent across utilities
-			if(itopicName.at(0) == '~') itopicName.replace(0, 1, "/" + ros::this_node::getName() + "/"); // Topicname is guaranteed to be non-empty as validate() fails for this case
+			if(itopicName.empty() || itopicName == "~" || itopicName == "/") itopicName = DEFAULT_TOPICNAME;
+			if(itopicName.at(0) == '~') itopicName.replace(0, 1, ros::this_node::getName() + "/");
 
 			// Advertise on the plot topic
 			ros::NodeHandle nh("~");
@@ -338,6 +342,8 @@ namespace util
 		const std::string& getTopicName() const { return itopicName; } //!< @brief Returns the topic name in use by the MarkerManager for publishing of the visualization markers
 		int getPublishInterval() const { return publishInterval; } //!< @brief Returns the publishing interval in use by the MarkerManager. If this is @c n then the markers are only published every `n`-th time.
 		int getUniqueID() { return ++IDCount; } //!< @brief Returns a unique ID for the purpose of uniquely identifying markers belonging to this MarkerManager (for the `id` field of the `visualization_msgs::Marker` class)
+		bool getEnabled() const { return enabled; } //!< @brief Returns whether the MarkerManager is currently enabled
+		int getNumMarkers() const { return m_markers.markers.size(); } //!< @brief Returns how many markers are currently located in the markers array
 
 		// Properties
 		void enable()  { enabled =  true; forcePublish(); } //!< @brief Enables the MarkerManager (see `publish()`)
@@ -522,10 +528,10 @@ namespace util
 		// Set the important marker fields
 		setFrameID(frameID);
 		marker.header.stamp = MM->stamp;
-		marker.ns = markerNamespace;
+		marker.ns = ns;
 		marker.id = MM->getUniqueID();
 		marker.action = visualization_msgs::Marker::MODIFY; // Equivalent to ADD...
-		marker.type = visualization_msgs::Marker::SPHERE; // Sphere by default (instead of arrow by default, as the Marker implementation specifies)
+		setType(visualization_msgs::Marker::SPHERE); // Sphere by default (instead of arrow by default, as the Marker implementation specifies)
 
 		// Initialise the remaining fields
 		setPosition(0.0, 0.0, 0.0);         // At origin by default
