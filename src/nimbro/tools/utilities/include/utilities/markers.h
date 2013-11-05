@@ -75,18 +75,18 @@ namespace util
 	{
 	public:
 		// Constants
-		static const std::string DEFAULT_MARKER_NAMESPACE; //!< @brief Default value of the namespace field for markers
+		static const std::string DEFAULT_MARKER_NAMESPACE; //!< @brief Default value of the namespace field for markers (expands to the node name).
 
 		/**
 		* @brief Default constructor.
 		*
 		* @param MM A pointer to the MarkerManager that should own this marker. If this parameter is null
 		* then a segmentation fault will be of likely consequence.
-		* @param frameID The name of the coordinate frame in which the marker should be published (e.g. '\\odom').
+		* @param frameID The name of the coordinate frame in which the marker should be published (e.g. "/odom").
 		* If it is desired for the marker to be continually retransformed into this coordinate frame for the
 		* duration of its lifetime, then use the `setFrameLocked()` function with argument `true`.
 		* @param markerNamespace The namespace to use for the marker (`ns` field). A leading '~' is automatically
-		* replaced by the node name (e.g. '~' turns into 'node_name', and '~foo' turns into 'node_name/foo').
+		* replaced by the node name (e.g. '~' turns into '/node_name', and '~foo' turns into '/node_name/foo').
 		**/
 		explicit GenMarker(MarkerManager* MM, const std::string& frameID = "", const std::string& markerNamespace = DEFAULT_MARKER_NAMESPACE);
 
@@ -94,7 +94,7 @@ namespace util
 		* @name Set Functions for Marker Properties
 		**/
 		///@{
-		//! @brief Sets the name of the coordinate frame in which the marker should be published (e.g. '\\odom'). Refer also to `setFrameLocked()`.
+		//! @brief Sets the name of the coordinate frame in which the marker should be published (e.g. "/odom"). Refer also to `setFrameLocked()`.
 		void setFrameID(const std::string& frameID)
 		{
 			marker.header.frame_id = frameID;
@@ -340,7 +340,7 @@ namespace util
 
 		// Get functions
 		const std::string& getTopicName() const { return itopicName; } //!< @brief Returns the topic name in use by the MarkerManager for publishing of the visualization markers
-		int getPublishInterval() const { return publishInterval; } //!< @brief Returns the publishing interval in use by the MarkerManager. If this is @c n then the markers are only published every `n`-th time.
+		int getPublishInterval() const { return publishInterval; } //!< @brief Returns the publishing interval in use by the MarkerManager. If this is 'n' then the markers are only published every `n`-th time.
 		int getUniqueID() { return ++IDCount; } //!< @brief Returns a unique ID for the purpose of uniquely identifying markers belonging to this MarkerManager (for the `id` field of the `visualization_msgs::Marker` class)
 		bool getEnabled() const { return enabled; } //!< @brief Returns whether the MarkerManager is currently enabled
 		int getNumMarkers() const { return m_markers.markers.size(); } //!< @brief Returns how many markers are currently located in the markers array
@@ -383,12 +383,12 @@ namespace util
 		*
 		* @param MM A pointer to the MarkerManager that should own this marker. If this parameter is null
 		* then a segmentation fault will be of likely consequence.
-		* @param frameID The name of the coordinate frame in which the marker should be published (e.g. '\\odom').
+		* @param frameID The name of the coordinate frame in which the marker should be published (e.g. "/odom").
 		* If it is desired for the marker to be continually retransformed into this coordinate frame for the
 		* duration of its lifetime, then use the `setFrameLocked()` function with argument `true`.
-		* @param diameter The required diameter of the spherical marker (default: 0.025).
+		* @param diameter The required diameter of the spherical marker (Default: 0.025).
 		* @param markerNamespace The namespace to use for the marker (`ns` field). A leading '~' is automatically
-		* replaced by the node name (e.g. '~' turns into 'node_name', and '~foo' turns into 'node_name/foo').
+		* replaced by the node name (e.g. '~' turns into '/node_name', and '~foo' turns into '/node_name/foo').
 		**/
 		explicit SphereMarker(MarkerManager* MM, const std::string& frameID = "", double diameter = 0.025, const std::string& markerNamespace = DEFAULT_MARKER_NAMESPACE) : GenMarker(MM, frameID, markerNamespace)
 		{
@@ -422,12 +422,12 @@ namespace util
 		*
 		* @param MM A pointer to the MarkerManager that should own this marker. If this parameter is null
 		* then a segmentation fault will be of likely consequence.
-		* @param frameID The name of the coordinate frame in which the marker should be published (e.g. '\\odom').
+		* @param frameID The name of the coordinate frame in which the marker should be published (e.g. "/odom").
 		* If it is desired for the marker to be continually retransformed into this coordinate frame for the
 		* duration of its lifetime, then use the `setFrameLocked()` function with argument `true`.
-		* @param size The required edge length of the cube marker (default: 0.025).
+		* @param size The required edge length of the cube marker (Default: 0.025).
 		* @param markerNamespace The namespace to use for the marker (`ns` field). A leading '~' is automatically
-		* replaced by the node name (e.g. '~' turns into 'node_name', and '~foo' turns into 'node_name/foo').
+		* replaced by the node name (e.g. '~' turns into '/node_name', and '~foo' turns into '/node_name/foo').
 		**/
 		explicit CubeMarker(MarkerManager* MM, const std::string& frameID = "", double size = 0.025, const std::string& markerNamespace = DEFAULT_MARKER_NAMESPACE) : GenMarker(MM, frameID, markerNamespace)
 		{
@@ -463,14 +463,14 @@ namespace util
 		*
 		* @param MM A pointer to the MarkerManager that should own this marker. If this parameter is null
 		* then a segmentation fault will be of likely consequence.
-		* @param frameID The name of the coordinate frame in which the marker should be published (e.g. '\\odom').
+		* @param frameID The name of the coordinate frame in which the marker should be published (e.g. "/odom").
 		* If it is desired for the marker to be continually retransformed into this coordinate frame for the
 		* duration of its lifetime, then use the `setFrameLocked()` function with argument `true`.
-		* @param sizeX The required size of the box in the x direction (default: 0.20).
-		* @param sizeY The required size of the box in the y direction (default: 0.20).
-		* @param sizeZ The required size of the box in the z direction (default: 0.20).
+		* @param sizeX The required size of the box in the x direction (Default: 0.20).
+		* @param sizeY The required size of the box in the y direction (Default: 0.20).
+		* @param sizeZ The required size of the box in the z direction (Default: 0.20).
 		* @param markerNamespace The namespace to use for the marker (`ns` field). A leading '~' is automatically
-		* replaced by the node name (e.g. '~' turns into 'node_name', and '~foo' turns into 'node_name/foo').
+		* replaced by the node name (e.g. '~' turns into '/node_name', and '~foo' turns into '/node_name/foo').
 		**/
 		explicit BoxMarker(MarkerManager* MM, const std::string& frameID = "", double sizeX = 0.20, double sizeY = 0.20, double sizeZ = 0.20, const std::string& markerNamespace = DEFAULT_MARKER_NAMESPACE) : GenMarker(MM, frameID, markerNamespace)
 		{
