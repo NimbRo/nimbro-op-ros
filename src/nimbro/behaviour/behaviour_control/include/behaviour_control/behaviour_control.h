@@ -8,6 +8,10 @@
 
 /**
 * @defgroup BehaviourControlFramework Behaviour Control Framework
+* 
+* @author Philipp Allgeuer (<pallgeuer@ais.uni-bonn.de>)
+* @date November 5, 2013
+* @version 1.0.1
 *
 * @section bcfsec1 Overview
 * The Behaviour Control Framework (BC Framework) is a generic platform independent
@@ -42,10 +46,25 @@
 * Performance and efficiency of the framework were of high consideration, as well as its
 * integrability and interoperability with the remaining code. Usability, structure and
 * customizability were also of key concern.
+*
+* @section bcfsec1a Academic Sources
+* The Behaviour Control Framework and the State Controller Library are detailed in the following paper.
 * 
-* @author Philipp Allgeuer (<pallgeuer@ais.uni-bonn.de>)
-* @date 19/09/13
-* @version 1.0
+* > P. Allgeuer and S. Behnke, "Hierarchical and State-based Architectures for Robot Behavior
+* > Planning and Control," in _Proceedings of the 8th Workshop on Humanoid Soccer Robots,
+* > IEEE-RAS Int. Conference on Humanoid Robots_, Atlanta, USA, 2013.
+* 
+* You are kindly asked to cite this paper if you use this framework for academic work.
+*
+@verbatim
+@INPROCEEDINGS{Allgeuer2013,
+  author = {Philipp Allgeuer and Sven Behnke},
+  title = {Hierarchical and State-based Architectures for Robot Behavior Planning and Control},
+  booktitle = {Proceedings of the 8th Workshop on Humanoid Soccer Robots, IEEE-RAS Int. Conference on Humanoid Robots},
+  year = {2013},
+  address = {Atlanta, USA}
+}
+@endverbatim
 *
 * @section bcfsec2 Dependencies
 * This library depends on the following external libraries (to avoid requiring C++11):

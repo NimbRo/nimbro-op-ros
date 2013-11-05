@@ -1,6 +1,16 @@
 // Preload library to enable UDP per default
 // Author: Max Schwarz <max.schwarz@uni-bonn.de>
 
+/**
+* @file udp_hinter.cpp
+* @ingroup nodes
+* @brief Defaults all subscribers to UDP
+* 
+* You can preload this library using `LD_PRELOAD=/path/to/libudp_hinter.so`.
+* It will cause all `ros::Subscribers` to default to UDP transport. It will not
+* affect `rospy` clients, though.
+**/
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -76,50 +86,48 @@ std::string getIfaceForHost(const std::string& host)
 	return addrbuf;
 }
 
-
-
 namespace ros
 {
+	typedef bool (*FuncType)(void* that, const std::string&);
+	FuncType g_realFunc = 0;
 
-typedef bool (*FuncType)(void* that, const std::string&);
-FuncType g_realFunc = 0;
-
-bool Subscription::negotiateConnection(const std::string& uri)
-{
-	std::string host;
-	uint32_t port = 0;
-
-	std::stringstream portstr;
-	portstr << port;
-
-	network::splitURI(uri, host, port);
-
-	std::string iface = getIfaceForHost(host);
-
-	// TODO: Better way of determining whether this is a WiFi connection
-	if(iface.substr(0, 4) == "wlan")
+	/// @cond negotiateConnection
+	bool Subscription::negotiateConnection(const std::string& uri)
 	{
-		if(transport_hints_.getTransports().empty())
+		std::string host;
+		uint32_t port = 0;
+
+		std::stringstream portstr;
+		portstr << port;
+
+		network::splitURI(uri, host, port);
+
+		std::string iface = getIfaceForHost(host);
+
+		// TODO: Better way of determining whether this is a WiFi connection
+		if(iface.substr(0, 4) == "wlan")
 		{
-			fprintf(stderr,
-				"[udp_hinter] It seems '%s' is published over WiFi from host '%s', enabling UDP per default\n",
-				name_.c_str(), host.c_str()
-			);
-			transport_hints_.udp();
+			if(transport_hints_.getTransports().empty())
+			{
+				fprintf(stderr,
+					"[udp_hinter] It seems '%s' is published over WiFi from host '%s', enabling UDP per default\n",
+					name_.c_str(), host.c_str()
+				);
+				transport_hints_.udp();
+			}
 		}
-	}
 
-	if(!g_realFunc)
-	{
-		g_realFunc = (FuncType)dlsym(RTLD_NEXT, MANGLED_NEGOTIATE_CONNECTION);
 		if(!g_realFunc)
 		{
-			fprintf(stderr, "[udp_hinter] Could not find real Subscription::negotiateConnection() function");
-			abort();
+			g_realFunc = (FuncType)dlsym(RTLD_NEXT, MANGLED_NEGOTIATE_CONNECTION);
+			if(!g_realFunc)
+			{
+				fprintf(stderr, "[udp_hinter] Could not find real Subscription::negotiateConnection() function");
+				abort();
+			}
 		}
+
+		return g_realFunc(this, uri);
 	}
-
-	return g_realFunc(this, uri);
-}
-
+	/// @endcond
 }

@@ -4,6 +4,8 @@
 
 namespace ros
 {
+	/// @cond negotiateConnection
 	bool Subscription::negotiateConnection(const std::string& uri)
 	{}
+	/// @endcond
 }

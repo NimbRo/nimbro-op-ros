@@ -9,6 +9,10 @@
 /**
 * @defgroup StateControllerLibrary State Controller Library
 *
+* @author Philipp Allgeuer (<pallgeuer@ais.uni-bonn.de>)
+* @date November 5, 2013
+* @version 1.2.1
+*
 * @section sclsec1 Overview
 * The %State Controller Library is a generic platform-independent C++ namespace that allows finite state machines
 * and multi-action planning generalisations thereof to be realised. The structure and implementation of this
@@ -21,12 +25,32 @@
 * be achieved by creating a state controller within the state of another state controller, and stepping the child
 * state controller within the @link statecontroller::State::execute `execute()` @endlink callback of the parent state
 * controller. Minor variations of this approach are also possible to adjust the visibility of certain state variables
-* and shared variables.
+* and shared variables. An overview of the State Controller Library architecture is shown in the following diagram.
 *
-* @author Philipp Allgeuer (<pallgeuer@ais.uni-bonn.de>)
-* @date July 10, 2013
-* @version 1.2
+* \image html state_controller/scl_architecture.png Figure 1: A block diagram of the State Controller Library architecture showing the states, state instances, state queue and state controller objects.
 *
+* The State Controller Library was developed as a simple and state-based alternative to the more complex but
+* powerful <a href="http://sourceforge.net/projects/behaviourcontrol/">Behaviour Control Framework</a>.
+* 
+* @section sclsec1a Academic Sources
+* The State Controller Library and the Behaviour Control Framework are detailed in the following paper.
+*
+* > P. Allgeuer and S. Behnke, "Hierarchical and State-based Architectures for Robot Behavior
+* > Planning and Control," in _Proceedings of the 8th Workshop on Humanoid Soccer Robots,
+* > IEEE-RAS Int. Conference on Humanoid Robots_, Atlanta, USA, 2013.
+*
+* You are kindly asked to cite this paper if you use this framework for academic work.
+*
+@verbatim
+@INPROCEEDINGS{Allgeuer2013,
+  author = {Philipp Allgeuer and Sven Behnke},
+  title = {Hierarchical and State-based Architectures for Robot Behavior Planning and Control},
+  booktitle = {Proceedings of the 8th Workshop on Humanoid Soccer Robots, IEEE-RAS Int. Conference on Humanoid Robots},
+  year = {2013},
+  address = {Atlanta, USA}
+}
+@endverbatim
+* 
 * @section sclsec2 Dependencies
 * This library depends on the following external libraries (to avoid requiring C++11):
 *

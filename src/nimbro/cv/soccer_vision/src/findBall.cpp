@@ -94,8 +94,8 @@ using namespace soccervision;
 							else if (CamFrm.orangeBallBag.ballFoundOnTheField == true) {
 						
 								bool closer_ball = (distanceToNewDetectedBall < CamFrm.orangeBallBag.ego_ball_distance);
-								bool much_bigger_ball = (possibleBallStack.size() >= (CamFrm.orangeBallBag.pixelsize+BALL_REGION_SIZE_INCR));
-								bool much_smaller_ball = (possibleBallStack.size() < (CamFrm.orangeBallBag.pixelsize-BALL_REGION_SIZE_INCR));
+								bool much_bigger_ball = (possibleBallStack.size() >= (((int) CamFrm.orangeBallBag.pixelsize)+BALL_REGION_SIZE_INCR));
+								bool much_smaller_ball = (possibleBallStack.size() < (((int) CamFrm.orangeBallBag.pixelsize)-BALL_REGION_SIZE_INCR));
 								
 								if ( much_bigger_ball || (!much_bigger_ball && closer_ball && !much_smaller_ball)) {
 									CamFrm.orangeBallBag.ballFoundOnTheField = true;//a ball was found
