@@ -93,6 +93,7 @@ nimbro make
 Here are a few examples of use of the nimbro tool:
 
 	nimbro                  # Go to the nimbro root directory
+	nimbro doc              # Open the nimbro source documentation
 	nimbro source           # Go to the nimbro source directory
 	nimbro src              # Go to the nimbro source directory
 	nimbro src nim          # Go to the nimbro source directory

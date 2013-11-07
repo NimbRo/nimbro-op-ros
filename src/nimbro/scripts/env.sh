@@ -94,14 +94,28 @@ function nimbro() {
 				"$SCRIPTS_DIR"/../doc/generate.sh | grep warning || true
 			fi
 			if [[ "$2" == "open" ]]; then
-				DOC_URL="$SCRIPTS_DIR/../doc/NimbRo_Soccer_Package.html"
+				DOC_URL="$SCRIPTS_DIR/../doc/out/html/index.html"
 				if which xdg-open > /dev/null; then
 					xdg-open "$DOC_URL"
+				elif which kde-open > /dev/null; then
+					kde-open "$DOC_URL"
 				elif which gnome-open > /dev/null; then
 					gnome-open "$DOC_URL"
 				else
 					echo "Could not detect the web browser to open the documentation with."
 				fi
+			fi
+			;;
+		doc)
+			DOC_URL="$SCRIPTS_DIR/../doc/out/html/index.html"
+			if which xdg-open > /dev/null; then
+				xdg-open "$DOC_URL"
+			elif which kde-open > /dev/null; then
+				kde-open "$DOC_URL"
+			elif which gnome-open > /dev/null; then
+				gnome-open "$DOC_URL"
+			else
+				echo "Could not detect the web browser to open the documentation with."
 			fi
 			;;
 		deploy)
@@ -247,5 +261,5 @@ EOS
 	esac
 }
 
-complete -o nospace -W "make deploy remake-all make-doc make-docv pull clean src source status ssh host help getconfig" nimbro
+complete -o nospace -W "make deploy remake-all make-doc make-docv doc pull clean src source status ssh host help getconfig" nimbro
 # EOF
